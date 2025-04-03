@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACZ Complaint System - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-blue-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-semibold">ACZ Complaint System</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="userDepartment" class="text-sm"></span>
+                    <button onclick="logout()" class="px-3 py-1 bg-red-600 rounded hover:bg-red-700 text-sm">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="px-4 py-6 sm:px-0">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Complaints Dashboard</h1>
+                <a href="complaint_form.html" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    <i class="fas fa-plus mr-2"></i>New Complaint
+                </a>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="mb-6 flex space-x-4">
+                <button onclick="filterComplaints('all')" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">All</button>
+                <button onclick="filterComplaints('Pending')" class="px-4 py-2 bg-yellow-200 rounded hover:bg-yellow-300">Pending</button>
+                <button onclick="filterComplaints('Resolved')" class="px-4 py-2 bg-green-200 rounded hover:bg-green-300">Resolved</button>
+            </div>
+
+            <!-- Complaints List -->
+            <div id="complaintsList" class="space-y-4">
+                <!-- Complaints will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="data.js"></script>
+    <script>
+        // Check authentication on page load
+        const currentUser = checkAuth();
+        document.getElementById('userDepartment').textContent = currentUser.department.toUpperCase();
+        
+        // Load complaints
+        function loadComplaints(filter = 'all') {
+            const complaints = getComplaintsByDepartment(currentUser.department);
+            const container = document.getElementById('complaintsList');
+            container.innerHTML = '';
+            
+            complaints.forEach(complaint => {
+                if (filter === 'all' || complaint.status === filter) {
+                    const statusColor = complaint.status === 'Pending' ? 'bg-yellow-100' : 'bg-green-100';
+                    const statusText = complaint.status === 'Pending' ? 'Pending' : 'Resolved';
+                    
+                    const complaintCard = document.createElement('div');
+                    complaintCard.className = `p-4 rounded-lg shadow ${statusColor}`;
+                    complaintCard.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-lg">${complaint.title || 'No Title'}</h3>
+                                <p class="text-gray-600">${complaint.description}</p>
+                                <div class="mt-2 text-sm text-gray-500">
+                                    <span>${new Date(complaint.createdAt).toLocaleString()}</span>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 text-xs rounded-full ${statusColor.replace('bg-', 'text-')}">
+                                ${statusText}
+                            </span>
+                        </div>
+                    `;
+                    container.appendChild(complaintCard);
+                }
+            });
+        }
+        
+        function filterComplaints(status) {
+            loadComplaints(status);
+        }
+        
+        // Initial load
+        loadComplaints();
+    </script>
+</body>
+</html>
