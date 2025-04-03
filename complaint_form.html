@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACZ Complaint System - New Complaint</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-blue-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-semibold">ACZ Complaint System</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="dashboard.html" class="px-3 py-1 bg-gray-600 rounded hover:bg-gray-700 text-sm">
+                        <i class="fas fa-arrow-left mr-1"></i> Back
+                    </a>
+                    <button onclick="logout()" class="px-3 py-1 bg-red-600 rounded hover:bg-red-700 text-sm">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-3xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h1 class="text-2xl font-bold text-gray-800 mb-6">Submit New Complaint</h1>
+            
+            <form id="complaintForm" class="space-y-6">
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700">Title*</label>
+                    <input type="text" id="title" name="title" required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                <div>
+                    <label for="department" class="block text-sm font-medium text-gray-700">Department*</label>
+                    <select id="department" name="department" required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Select Department</option>
+                        <option value="facilities">Facilities Management</option>
+                        <option value="security">Security</option>
+                        <option value="operations">Operations</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="priority" class="block text-sm font-medium text-gray-700">Priority*</label>
+                    <select id="priority" name="priority" required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Select Priority</option>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">Description*</label>
+                    <textarea id="description" name="description" rows="4" required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+                
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="window.location.href='dashboard.html'" 
+                        class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                        class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Submit Complaint
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="data.js"></script>
+    <script>
+        // Check authentication on page load
+        const currentUser = checkAuth();
+        
+        // Set default department to current user's department
+        document.getElementById('department').value = currentUser.department;
+        
+        // Handle form submission
+        document.getElementById('complaintForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const complaint = {
+                title: document.getElementById('title').value,
+                department: document.getElementById('department').value,
+                priority: document.getElementById('priority').value,
+                description: document.getElementById('description').value,
+                submittedBy: currentUser.username
+            };
+            
+            saveComplaint(complaint);
+            alert('Complaint submitted successfully!');
+            window.location.href = 'dashboard.html';
+        });
+    </script>
+</body>
+</html>
